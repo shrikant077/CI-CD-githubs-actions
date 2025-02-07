@@ -1,0 +1,74 @@
+name: HTML Content Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # You can change the version if necessary
+
+      # Step 3: Install Puppeteer (and its dependencies)
+      - name: Install Puppeteer
+        run: |
+          npm install puppeteer
+
+      # Step 4: Run the HTML test using Puppeteer
+      - name: Run HTML Test
+        run: |
+          node -e "
+          const puppeteer = require('puppeteer');
+          const path = require('path');
+
+          (async () => {
+            try {
+              // Launch Puppeteer browser with no-sandbox flag (necessary in CI environments)
+              const browser = await puppeteer.launch({
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
+              });
+
+              // Open a new page
+              const page = await browser.newPage();
+
+              // Get the file path for the HTML page
+              const filePath = path.join(process.env.GITHUB_WORKSPACE, 'index.html');
+
+              // Open the HTML file
+              await page.goto('file://' + filePath);
+
+              // Check if <h1> exists
+              const result = await page.evaluate(() => {
+                if (document.querySelector('h1')) {
+                  return 'Test case passed';
+                } else {
+                  return 'Test case failed';
+                }
+              });
+
+              // Output the result to the GitHub Actions logs
+              console.log(result);
+              if (result === 'Test case failed') {
+                process.exit(1);  // Exit with failure status if <h1> is not found
+              }
+
+              // Close the browser
+              await browser.close();
+            } catch (error) {
+              console.error('Error during test:', error);
+              process.exit(1);  // Exit with failure status on error
+            }
+          })();"

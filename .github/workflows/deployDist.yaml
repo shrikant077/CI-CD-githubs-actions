@@ -17,39 +17,3 @@ jobs:
             #see github marketplace for using already build github actions by other developer like one for cloning repository
             #   uses: actions/checkout@v4
             #google expression github actions
-            
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                node-version: '16'
-
-            - name: Install dependencies
-              run: |
-                npm install puppeteer
-
-            - name: Run HTML Test
-              run: |
-                # Run the test using Puppeteer to open your existing index.html
-                node -e "
-                const puppeteer = require('puppeteer');
-
-                (async () => {
-                  const browser = await puppeteer.launch();
-                  const page = await browser.newPage();
-
-                  await page.goto('https://github.com/shrikant077/CI-CD-githubs-actions/blob/main/index.html');
-
-                  const result = await page.evaluate(() => {
-                  if (document.querySelector('h1')) {
-                    return 'Test case passed';
-                  } else {
-                    return 'Test case failed';
-                  }
-                });
-
-                console.log(result);
-                await browser.close();
-                })();"
