@@ -17,3 +17,4 @@ jobs:
             #see github marketplace for using already build github actions by other developer like one for cloning repository
             #   uses: actions/checkout@v4
             #google expression github actions
+            #skip workflow command git commit -m "comment added [skip ci]"
