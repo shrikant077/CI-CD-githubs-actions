@@ -1,0 +1,11 @@
+name: Greetings #workflow name
+
+on: push #to tell when (on which event) to trigger the workflow i.e., we specified on push, if want to specify multiple events write in form of array i.e., [push, pull]
+
+#under jobs we tell workflow what to do and whatever code we write that runs on different remote machine not on our machine we can choose on which remote machone the code should run to see checkout git actions remote runner(google search) here we are using ubuntu-latest
+jobs:
+    greet:
+        runs-on: ubuntu-latest
+        steps:
+            - name: "greet user"
+              run: echo "Hello, World!"
