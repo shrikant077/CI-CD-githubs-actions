@@ -1,11 +1,55 @@
 name: Deploy Dist
-on: [push,workflow_dispatch]
+on: [push,workflow_dispatch] #google github action events to know all the events that trigger workflows
+
+#we can also use this syntax for on
+# on:
+#     - push
+#     - workflow_dispatch
 jobs:
     test:
         runs-on: ubuntu-latest
         steps:
             - name: Get Code
-              run: |
+              run: | #to run multiple commands this pipe sign (|) is needed, things written within {{}} are expression this is expression syntax used for using context provided by github like here "github" that we used is a context
                 echo "cloning repo..."
-                echo "${{toJson(github)}}"
+                echo "${{toJson(github)}}" 
                 git clone "https://github.com/${{github.repository}}.git"
+            #see github marketplace for using already build github actions by other developer like one for cloning repository
+            #   uses: actions/checkout@v4
+            #google expression github actions
+            
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                node-version: '16'
+
+            - name: Install dependencies
+              run: |
+                npm install puppeteer
+
+            - name: Run HTML Test
+              run: |
+                # Run the test using Puppeteer to open your existing index.html
+                node -e "
+                const puppeteer = require('puppeteer');
+
+                (async () => {
+                  const browser = await puppeteer.launch();
+                  const page = await browser.newPage();
+
+                  await page.goto('file://' + __dirname + '/CI-CD-githubs-actions/index.html');
+
+                  const result = await page.evaluate(() => {
+                  if (document.querySelector('h1')) {
+                    return 'Test case passed';
+                  } else {
+                    return 'Test case failed';
+                  }
+                });
+
+                console.log(result);
+                await browser.close();
+                })();"
