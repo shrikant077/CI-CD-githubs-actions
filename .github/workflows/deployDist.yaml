@@ -40,7 +40,7 @@ jobs:
                   const browser = await puppeteer.launch();
                   const page = await browser.newPage();
 
-                  await page.goto('file://' + __dirname + '/CI-CD-githubs-actions/index.html');
+                  await page.goto('https://github.com/shrikant077/CI-CD-githubs-actions/blob/main/index.html');
 
                   const result = await page.evaluate(() => {
                   if (document.querySelector('h1')) {
